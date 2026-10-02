@@ -1,7 +1,7 @@
 import sys,os,re,html,hashlib,csv,time,json,urllib.request,urllib.parse
 from concurrent.futures import ThreadPoolExecutor
 BASE='https://rty0102.creatorlink.net'
-ROOT=os.path.expanduser('~/mnt/01.컨설팅 업무/02.카페보리_경북청도/류태열_온라인도록_자료수집')
+ROOT=os.path.expanduser('~/mnt/<작업폴더>')
 UA={'User-Agent':'Mozilla/5.0'}
 NAV={'Toggle navigation','불교사진가류태열','해브 갤러리','구례 대 화엄사','해인사','흑백마애불 암각화 봉정사 통도사','운주사','선암사','법주사 존재시리즈','MORE GALLERIES판매작품','flower연꽃사진','Exhibion View 장승','네팔  캄보디아  미얀마','風景 landscape','도서발간','동영상','단 사진','우포','을릉도','ARTISTS Ryu tae-yeol','게시판','전시소식'}
 def q(u):

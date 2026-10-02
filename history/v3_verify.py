@@ -1,6 +1,6 @@
 import csv,re,os,sys,glob,hashlib,urllib.request,collections
 from PIL import Image
-R=os.path.expanduser('~/mnt/01.컨설팅 업무/02.카페보리_경북청도/류태열_온라인도록_자료수집')
+R=os.path.expanduser('~/mnt/<작업폴더>')
 d=glob.glob(f'{R}/{int(sys.argv[1]):02d}_*')[0]; os.chdir(d); print(d.split('/')[-1])
 rows=list(csv.reader(open('파일명대응표.csv',encoding='utf-8-sig')))[1:]
 files=sorted(os.listdir('이미지')); bad=0

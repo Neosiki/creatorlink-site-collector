@@ -2,7 +2,46 @@
 
 Creatorlink(애드블록) 포트폴리오 사이트의 작품 이미지, 영상 주소, 설명 글을 메뉴 단위로 완결 수집하는 도구입니다. Python 3.8 이상과 표준 라이브러리만 쓰고, 이미지 크기 측정과 열림 검사에만 Pillow를 선택적으로 씁니다.
 
-2026년 10월 카페보리 온라인 도록(작가 류태열 포트폴리오) 자료 수집 작업에서 만들었고, 그 작업에서 겪은 문제를 모두 반영했습니다. 개발 과정 전체는 `docs/DEVELOPMENT_LOG.md`에 있습니다.
+2026년 10월 한 작가 포트폴리오의 온라인 도록 제작용 자료 수집 작업에서 만들었고, 그 작업에서 겪은 문제를 모두 반영했습니다. 개발 과정 전체는 `docs/DEVELOPMENT_LOG.md`에 있습니다.
+
+## 설치
+
+요구 사항은 Python 3.8 이상과 인터넷 연결입니다. 별도 패키지 설치는 필요 없습니다. 이미지 크기 측정과 열림 검사를 쓰려면 Pillow를 추가로 설치하십시오(없어도 수집은 됩니다).
+
+```bash
+git clone https://github.com/Neosiki/creatorlink-site-collector.git
+cd creatorlink-site-collector
+
+python3 --version                # Windows는 python --version
+python3 scripts/collect.py --help
+
+# 선택: 열림 검사와 해상도 측정
+pip install pillow
+```
+
+Git 없이 받으려면 저장소 페이지의 Code 버튼에서 Download ZIP을 눌러 압축을 풉니다.
+
+Linux에서 동작을 확인했습니다. Windows에서는 같은 명령으로 실행되게 작성했지만 직접 검증하지는 않았습니다. 한글 메뉴 이름이 깨지면 PowerShell에서 `$env:PYTHONUTF8=1`을 먼저 실행하거나 WSL을 쓰십시오.
+
+### Claude 스킬로 사용하기
+
+`SKILL.md`가 스킬 정의입니다. Claude Code에서는 이 저장소 폴더를 `~/.claude/skills/creatorlink-site-collector/`로 복사하면 "이 Creatorlink 사이트의 이미지를 전부 모아 줘" 같은 요청에 쓰입니다. 스킬 없이 위의 명령을 직접 실행해도 같은 결과가 나옵니다.
+
+## 처음 사용하는 순서
+
+1. `discover`로 메뉴 목록, 소유자 id, 로고 해시가 제대로 잡히는지 확인합니다.
+2. 메뉴 하나를 `--menu`로 먼저 받아 `output/` 안의 결과를 열어 봅니다.
+3. 이상이 없으면 `--all`로 전체를 받고, 끝나면 `verify`와 `master`를 실행합니다.
+
+## 문제가 생기면
+
+| 증상 | 원인과 조치 |
+|---|---|
+| 403 또는 연결 거부 | 네트워크 허용 목록에 사이트 도메인, `storage.googleapis.com`, `lh3.googleusercontent.com`이 모두 있는지 확인 |
+| 종료 코드 2, `PARTIAL` | 시간 예산(`--budget`, 기본 140초)을 넘긴 것입니다. 같은 명령을 다시 실행하면 이어받습니다 |
+| `수집미완료.txt`가 생김 | 목록 요청이 실패한 메뉴입니다. 다시 실행해 `수집완료.txt`로 바뀌는지 확인 |
+| `verify`가 `source_file_missing` 보고 | 사이트 저장소에서 원본이 삭제된 파일입니다. 받을 수 없습니다 |
+| 메뉴 이름이 맞지 않음 | `discover` 출력에 나온 이름 그대로 `--menu`에 넣습니다 |
 
 ## 빠른 사용
 

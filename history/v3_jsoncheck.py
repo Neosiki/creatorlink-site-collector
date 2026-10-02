@@ -1,5 +1,5 @@
 import csv,re,os,sys,glob,json,html,hashlib,urllib.request
-R=os.path.expanduser('~/mnt/01.컨설팅 업무/02.카페보리_경북청도/류태열_온라인도록_자료수집')
+R=os.path.expanduser('~/mnt/<작업폴더>')
 def run(n):
     d=glob.glob(f'{R}/{n:02d}_*')[0]
     t=open(d+'/원본페이지.html',encoding='utf-8').read()
