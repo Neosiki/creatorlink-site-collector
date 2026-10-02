@@ -2,7 +2,18 @@
 
 Creatorlink(애드블록) 포트폴리오 사이트의 작품 이미지, 영상 주소, 설명 글을 메뉴 단위로 완결 수집하는 도구입니다. Python 3.8 이상과 표준 라이브러리만 쓰고, 이미지 크기 측정과 열림 검사에만 Pillow를 선택적으로 씁니다.
 
-2026년 10월 한 작가 포트폴리오의 온라인 도록 제작용 자료 수집 작업에서 만들었고, 그 작업에서 겪은 문제를 모두 반영했습니다. 개발 과정 전체는 `docs/DEVELOPMENT_LOG.md`에 있습니다.
+2026년 10월 한 작가 포트폴리오의 온라인 도록 제작용 자료 수집 작업에서 만들었고, 그 작업에서 겪은 문제를 모두 반영했습니다. 개발 과정 전체는 `docs/DEVELOPMENT_LOG.md`에 있습니다. English summary: [README.en.md](README.en.md)
+
+## 문서
+
+| 문서 | 내용 |
+|---|---|
+| [docs/INSTALL_AI.md](docs/INSTALL_AI.md) | Claude, ChatGPT, Codex, Gemini, Cursor, Copilot 등 AI 도구별 설치 방법 |
+| [docs/MANUAL.md](docs/MANUAL.md) | 사용 매뉴얼: 명령, 옵션, 결과 폴더, 점검 방법 |
+| [docs/USAGE_EXAMPLES.md](docs/USAGE_EXAMPLES.md) | 사용 사례, AI에게 시키는 말, FAQ와 문제 해결 |
+| [docs/SITE_STRUCTURE.md](docs/SITE_STRUCTURE.md) | Creatorlink 사이트 구조와 갤러리 목록 요청 |
+| [docs/DEVELOPMENT_LOG.md](docs/DEVELOPMENT_LOG.md) | 개발 일지와 시행착오 |
+| [AGENTS.md](AGENTS.md) | AI 에이전트용 작업 지침(Codex, Cursor, Copilot 등이 자동으로 읽음) |
 
 ## 설치
 
@@ -23,14 +34,26 @@ Git 없이 받으려면 저장소 페이지의 Code 버튼에서 Download ZIP을
 
 Linux에서 동작을 확인했습니다. Windows에서는 같은 명령으로 실행되게 작성했지만 직접 검증하지는 않았습니다. 한글 메뉴 이름이 깨지면 PowerShell에서 `$env:PYTHONUTF8=1`을 먼저 실행하거나 WSL을 쓰십시오.
 
-### Claude 스킬로 사용하기
+### AI 도구에서 사용하기
 
-`SKILL.md`가 스킬 정의입니다. Claude Code에서는 이 저장소 폴더를 `~/.claude/skills/creatorlink-site-collector/`로 복사하면 "이 Creatorlink 사이트의 이미지를 전부 모아 줘" 같은 요청에 쓰입니다. 스킬 없이 위의 명령을 직접 실행해도 같은 결과가 나옵니다.
+스킬 배포 파일은 `python3 scripts/package_skill.py`로 만듭니다(`dist/` 아래에 폴더와 zip). 도구별 자세한 절차는 [docs/INSTALL_AI.md](docs/INSTALL_AI.md)에 있습니다.
+
+| 도구 | 설치 방식 | 수집 실행 |
+|---|---|---|
+| Claude Code | `dist/creatorlink-site-collector`를 `~/.claude/skills/`에 복사 | 가능 |
+| Claude 앱 | 설정 > Capabilities > Skills에서 zip 업로드 | 네트워크 허용 범위에 따름 |
+| ChatGPT | Skills 업로드(Business·Enterprise·Edu 등), 그 외 플랜은 지침란에 `AGENTS.md` 붙여넣기 | 환경에 따름 |
+| Codex | `~/.agents/skills/`에 복사, 또는 저장소의 `AGENTS.md` | 가능 |
+| Gemini 앱 | 설정 > Skills에서 폴더 또는 zip 업로드 | 불가(인터넷이 필요한 스크립트 미지원). 안내와 해석용 |
+| Gemini CLI | `~/.gemini/skills/`에 복사 또는 `gemini skills install` | 가능 |
+| Cursor, Copilot, Windsurf | 저장소 루트의 `AGENTS.md` | 가능 |
+
+수집이 막히는 환경에서는 PC에서 명령을 실행하고 출력만 AI에게 붙여 넣어 해석을 맡기는 방식을 씁니다.
 
 ## 처음 사용하는 순서
 
 1. `discover`로 메뉴 목록, 소유자 id, 로고 해시가 제대로 잡히는지 확인합니다.
-2. 메뉴 하나를 `--menu`로 먼저 받아 `output/` 안의 결과를 열어 봅니다.
+2. 메뉴 하나를 `--menu <path>`로 먼저 받아 `output/` 안의 결과를 열어 봅니다.
 3. 이상이 없으면 `--all`로 전체를 받고, 끝나면 `verify`와 `master`를 실행합니다.
 
 ## 문제가 생기면
@@ -41,7 +64,7 @@ Linux에서 동작을 확인했습니다. Windows에서는 같은 명령으로 �
 | 종료 코드 2, `PARTIAL` | 시간 예산(`--budget`, 기본 140초)을 넘긴 것입니다. 같은 명령을 다시 실행하면 이어받습니다 |
 | `수집미완료.txt`가 생김 | 목록 요청이 실패한 메뉴입니다. 다시 실행해 `수집완료.txt`로 바뀌는지 확인 |
 | `verify`가 `source_file_missing` 보고 | 사이트 저장소에서 원본이 삭제된 파일입니다. 받을 수 없습니다 |
-| 메뉴 이름이 맞지 않음 | `discover` 출력에 나온 이름 그대로 `--menu`에 넣습니다 |
+| `홈 메뉴에 없는 경로` 오류 | `--menu`에는 메뉴 이름이 아니라 `discover` 출력의 `path` 값을 넣습니다(공백은 하이픈으로 바뀌어 있음) |
 
 ## 빠른 사용
 
@@ -50,7 +73,7 @@ Linux에서 동작을 확인했습니다. Windows에서는 같은 명령으로 �
 python3 scripts/collect.py discover --base https://example.creatorlink.net
 
 # 2) 메뉴 하나 수집 (여러 번 지정 가능)
-python3 scripts/collect.py collect --base https://example.creatorlink.net --out ./output --menu 해인사
+python3 scripts/collect.py collect --base https://example.creatorlink.net --out ./output --menu <discover에서 나온 path>
 
 # 3) 전체 메뉴를 차례로 수집
 python3 scripts/collect.py collect --base https://example.creatorlink.net --out ./output --all
@@ -97,7 +120,7 @@ output/
 
 ## 검증
 
-`tests/`에 단위 테스트 8개가 있습니다(`python3 -m unittest discover -s tests`). 실제 사이트에서는 6개 메뉴(10, 13, 14, 15, 18, 20번)를 수집해 먼저 PC에서 받은 결과와 장수, 용량, 목록 API 작품 수가 모두 일치함을 확인했습니다.
+`tests/`에 단위 테스트 11개가 있습니다(`python3 -m unittest discover -s tests`). 실제 사이트에서는 6개 메뉴(10, 13, 14, 15, 18, 20번)를 수집해 먼저 PC에서 받은 결과와 장수, 용량, 목록 API 작품 수가 모두 일치함을 확인했습니다.
 
 ## 주의
 
